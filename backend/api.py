@@ -34,7 +34,7 @@ sessions: Dict[str, AkinatorState] = {}
 
 
 class StartGameRequest(BaseModel):
-    session_id: str
+    pass
 
 
 class AnswerRequest(BaseModel):
@@ -44,11 +44,9 @@ class AnswerRequest(BaseModel):
 
 class GameResponse(BaseModel):
     session_id: str
-    message: str
-    questions_asked: int
+    question: str
     is_guess: bool
     game_over: bool
-    tool_calls: Optional[List[str]] = None
 
 
 @app.get("/")
@@ -60,7 +58,8 @@ def root():
 @app.post("/api/start", response_model=GameResponse)
 def start_game(request: StartGameRequest):
     """Start a new game session."""
-    session_id = request.session_id
+    import uuid
+    session_id = str(uuid.uuid4())
 
     # Initialize new game state
     initial_state: AkinatorState = {
@@ -95,11 +94,9 @@ def start_game(request: StartGameRequest):
 
         return GameResponse(
             session_id=session_id,
-            message=message_content,
-            questions_asked=result["questions_asked"],
+            question=message_content,
             is_guess=is_guess,
             game_over=False,
-            tool_calls=tool_calls,
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error starting game: {str(e)}")
@@ -123,8 +120,7 @@ def submit_answer(request: AnswerRequest):
         del sessions[session_id]
         return GameResponse(
             session_id=session_id,
-            message="Thanks for playing! Game ended.",
-            questions_asked=state["questions_asked"],
+            question="Thanks for playing! Game ended.",
             is_guess=False,
             game_over=True,
         )
@@ -162,11 +158,9 @@ def submit_answer(request: AnswerRequest):
 
         return GameResponse(
             session_id=session_id,
-            message=message_content,
-            questions_asked=result["questions_asked"],
+            question=message_content,
             is_guess=is_guess,
             game_over=game_over,
-            tool_calls=tool_calls,
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing answer: {str(e)}")
