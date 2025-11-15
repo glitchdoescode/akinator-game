@@ -20,6 +20,9 @@ from typing import Optional, List, Dict
 
 app = FastAPI(title="Akinator API")
 
+# Get max guesses from environment variable (default: 20)
+MAX_GUESSES = int(os.getenv("MAX_GUESSES", "20"))
+
 # Enable CORS for frontend
 app.add_middleware(
     CORSMiddleware,
@@ -161,10 +164,10 @@ def submit_answer(request: AnswerRequest):
         if is_guess and answer.lower() in ["yes", "y", "correct", "right"]:
             game_over = True
             del sessions[session_id]
-        # Check if max guesses (20) reached
-        elif result.get("guesses_made", 0) >= 20:
+        # Check if max guesses reached
+        elif result.get("guesses_made", 0) >= MAX_GUESSES:
             game_over = True
-            message_content = "I give up! You win! I couldn't guess your character in 20 tries. 🎉"
+            message_content = f"I give up! You win! I couldn't guess your character in {MAX_GUESSES} tries. 🎉"
             del sessions[session_id]
 
         return GameResponse(

@@ -9,6 +9,9 @@ from langgraph.prebuilt import ToolNode
 from tools import TOOLS
 import os
 
+# Get max guesses from environment variable (default: 20)
+MAX_GUESSES = int(os.getenv("MAX_GUESSES", "20"))
+
 
 # Define the state
 class AkinatorState(TypedDict):
@@ -104,7 +107,7 @@ When you're confident (after 12-20 questions and web search), use the make_final
 - Call make_final_guess(character_name="Name", confidence="high/medium/low")
 - Then ask the user to confirm: "I believe it's [NAME]. Am I correct?"
 - The tool will handle marking this as a guess
-- IMPORTANT: You have a maximum of 20 guesses. Use them wisely!
+- IMPORTANT: You have a maximum of {max_guesses} guesses. Use them wisely!
 - Track your guesses and make strategic attempts
 
 EXAMPLES FOR DIFFERENT CATEGORIES:
@@ -155,7 +158,7 @@ YOUR CHECKLIST:
 
 Current Stats:
 - Questions asked: {questions_asked}
-- Guesses made: {guesses_made}/20
+- Guesses made: {guesses_made}/{max_guesses}
 """
 
 
@@ -168,7 +171,8 @@ def call_model(state: AkinatorState) -> AkinatorState:
     # Inject system prompt with current question count and guesses made
     system_msg = SystemMessage(content=SYSTEM_PROMPT.format(
         questions_asked=questions_asked,
-        guesses_made=guesses_made
+        guesses_made=guesses_made,
+        max_guesses=MAX_GUESSES
     ))
     response = llm_with_tools.invoke([system_msg] + messages)
 
