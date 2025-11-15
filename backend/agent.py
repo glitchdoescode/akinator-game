@@ -15,6 +15,7 @@ class AkinatorState(TypedDict):
     """State for the Akinator game."""
     messages: Annotated[list[BaseMessage], add_messages]
     questions_asked: int
+    guesses_made: int  # Track number of guesses made
     user_thinking_of: str  # The character the user is thinking of (for testing)
     game_over: bool
 
@@ -103,6 +104,8 @@ When you're confident (after 12-20 questions and web search), use the make_final
 - Call make_final_guess(character_name="Name", confidence="high/medium/low")
 - Then ask the user to confirm: "I believe it's [NAME]. Am I correct?"
 - The tool will handle marking this as a guess
+- IMPORTANT: You have a maximum of 20 guesses. Use them wisely!
+- Track your guesses and make strategic attempts
 
 EXAMPLES FOR DIFFERENT CATEGORIES:
 
@@ -150,7 +153,9 @@ YOUR CHECKLIST:
 ☐ Asked distinguishing questions about candidates?
 ☐ Ready to guess from search results?
 
-Current question count: {questions_asked}
+Current Stats:
+- Questions asked: {questions_asked}
+- Guesses made: {guesses_made}/20
 """
 
 
@@ -158,14 +163,19 @@ def call_model(state: AkinatorState) -> AkinatorState:
     """Call the LLM with the current state."""
     messages = state["messages"]
     questions_asked = state.get("questions_asked", 0)
+    guesses_made = state.get("guesses_made", 0)
 
-    # Inject system prompt with current question count
-    system_msg = SystemMessage(content=SYSTEM_PROMPT.format(questions_asked=questions_asked))
+    # Inject system prompt with current question count and guesses made
+    system_msg = SystemMessage(content=SYSTEM_PROMPT.format(
+        questions_asked=questions_asked,
+        guesses_made=guesses_made
+    ))
     response = llm_with_tools.invoke([system_msg] + messages)
 
     return {
         "messages": [response],
         "questions_asked": questions_asked,
+        "guesses_made": guesses_made,
     }
 
 

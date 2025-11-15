@@ -69,6 +69,7 @@ def start_game(request: StartGameRequest):
             )
         ],
         "questions_asked": 0,
+        "guesses_made": 0,
         "user_thinking_of": "",
         "game_over": False,
     }
@@ -150,10 +151,20 @@ def submit_answer(request: AnswerRequest):
         # Check if this is a guess (LLM used make_final_guess tool OR message contains FINAL_GUESS)
         is_guess = is_final_guess or "FINAL_GUESS:" in message_content
 
+        # Increment guesses_made if this is a guess
+        if is_guess:
+            result["guesses_made"] = result.get("guesses_made", 0) + 1
+            sessions[session_id] = result
+
         # If it's a correct guess, mark game as over
         game_over = False
         if is_guess and answer.lower() in ["yes", "y", "correct", "right"]:
             game_over = True
+            del sessions[session_id]
+        # Check if max guesses (20) reached
+        elif result.get("guesses_made", 0) >= 20:
+            game_over = True
+            message_content = "I give up! You win! I couldn't guess your character in 20 tries. 🎉"
             del sessions[session_id]
 
         return GameResponse(
