@@ -2,6 +2,7 @@
 
 from typing import Annotated, TypedDict, Literal
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, SystemMessage
 from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
@@ -11,6 +12,9 @@ import os
 
 # Get max guesses from environment variable (default: 20)
 MAX_GUESSES = int(os.getenv("MAX_GUESSES", "20"))
+
+# Get LLM provider from environment variable (default: gemini)
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "gemini").lower()
 
 
 # Define the state
@@ -23,12 +27,21 @@ class AkinatorState(TypedDict):
     game_over: bool
 
 
-# Initialize the LLM with Gemini 2.5 Flash
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash-preview-05-20",
-    google_api_key=os.getenv("GOOGLE_API_KEY"),
-    temperature=0.7,
-)
+# Initialize the LLM based on provider
+if LLM_PROVIDER == "openai":
+    llm = ChatOpenAI(
+        model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
+        api_key=os.getenv("OPENAI_API_KEY"),
+        temperature=0.7,
+    )
+elif LLM_PROVIDER == "gemini":
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash-preview-05-20",
+        google_api_key=os.getenv("GOOGLE_API_KEY"),
+        temperature=0.7,
+    )
+else:
+    raise ValueError(f"Unsupported LLM provider: {LLM_PROVIDER}. Use 'gemini' or 'openai'")
 
 # Bind tools to the LLM
 llm_with_tools = llm.bind_tools(TOOLS)
