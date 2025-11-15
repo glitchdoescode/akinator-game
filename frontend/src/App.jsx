@@ -295,7 +295,7 @@ function App() {
 
           {/* Footer */}
           <Text textAlign="center" color="gray.500" fontSize="sm">
-            Powered by LangGraph + Gemini 2.5 Flash
+            Powered by LangGraph
           </Text>
         </VStack>
       </Container>
