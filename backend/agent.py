@@ -31,7 +31,7 @@ class AkinatorState(TypedDict):
 if LLM_PROVIDER == "openai":
     llm = ChatOpenAI(
         model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
-        api_key=os.getenv("OPENAI_API_KEY"),
+        openai_api_key=os.getenv("OPENAI_API_KEY"),
         temperature=0.7,
     )
 elif LLM_PROVIDER == "gemini":
