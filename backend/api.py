@@ -36,6 +36,30 @@ app.add_middleware(
 sessions: Dict[str, AkinatorState] = {}
 
 
+def extract_message_text(message) -> str:
+    """Extract text from message content (handles both string and list formats)."""
+    if not hasattr(message, "content"):
+        return ""
+
+    content = message.content
+
+    # If content is a string, return it directly
+    if isinstance(content, str):
+        return content
+
+    # If content is a list (new format), extract text from blocks
+    if isinstance(content, list):
+        text_parts = []
+        for block in content:
+            if isinstance(block, dict) and block.get("type") == "text":
+                text_parts.append(block.get("text", ""))
+            elif isinstance(block, str):
+                text_parts.append(block)
+        return " ".join(text_parts)
+
+    return str(content)
+
+
 class StartGameRequest(BaseModel):
     pass
 
@@ -84,7 +108,7 @@ def start_game(request: StartGameRequest):
 
         # Get the AI's first message
         last_message = result["messages"][-1]
-        message_content = last_message.content if hasattr(last_message, "content") else ""
+        message_content = extract_message_text(last_message)
 
         # Check for tool calls and final guess
         tool_calls = None
@@ -140,7 +164,7 @@ def submit_answer(request: AnswerRequest):
 
         # Get the AI's response
         last_message = result["messages"][-1]
-        message_content = last_message.content if hasattr(last_message, "content") else ""
+        message_content = extract_message_text(last_message)
 
         # Check for tool calls
         tool_calls = None
