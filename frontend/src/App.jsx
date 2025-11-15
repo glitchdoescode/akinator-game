@@ -177,22 +177,29 @@ function App() {
               </Box>
 
               {/* Current Question Display */}
-              <Box p={12} textAlign="center" minH="300px" display="flex" alignItems="center" justifyContent="center">
-                <VStack gap={6}>
+              <Box p={{ base: 6, md: 12 }} textAlign="center" minH={{ base: "200px", md: "300px" }} display="flex" alignItems="center" justifyContent="center">
+                <VStack gap={6} width="100%">
                   {isLoading ? (
                     <>
                       <Spinner size="xl" colorPalette="purple" />
-                      <Text fontSize="lg" color="gray.600" _dark={{ color: "gray.400" }}>
+                      <Text fontSize={{ base: "md", md: "lg" }} color="gray.600" _dark={{ color: "gray.400" }}>
                         Thinking...
                       </Text>
                     </>
                   ) : (
                     <>
-                      <Heading size="xl" textAlign="center" color="gray.900" _dark={{ color: "white" }}>
+                      <Heading
+                        size={{ base: "lg", md: "xl" }}
+                        textAlign="center"
+                        color="gray.900"
+                        _dark={{ color: "white" }}
+                        px={{ base: 2, md: 0 }}
+                        wordBreak="break-word"
+                      >
                         {currentQuestion}
                       </Heading>
                       {isGuess && (
-                        <Text fontSize="md" color="yellow.600" _dark={{ color: "yellow.400" }} fontWeight="medium">
+                        <Text fontSize={{ base: "sm", md: "md" }} color="yellow.600" _dark={{ color: "yellow.400" }} fontWeight="medium">
                           Is this your character?
                         </Text>
                       )}
@@ -203,49 +210,61 @@ function App() {
 
               {/* Answer Buttons */}
               {!gameOver && !isLoading && (
-                <Box px={6} py={8} borderTopWidth="1px">
+                <Box px={{ base: 4, md: 6 }} py={{ base: 6, md: 8 }} borderTopWidth="1px">
                   <VStack gap={4}>
-                    <Text fontSize="sm" color="gray.600" _dark={{ color: "gray.400" }} textAlign="center">
+                    <Text fontSize={{ base: "xs", md: "sm" }} color="gray.600" _dark={{ color: "gray.400" }} textAlign="center">
                       Choose your answer:
                     </Text>
-                    <HStack gap={3} justify="center" flexWrap="wrap">
-                      <Button
-                        size="lg"
-                        colorPalette="green"
-                        onClick={() => submitAnswer('Yes')}
-                        disabled={isLoading}
-                        px={8}
-                      >
-                        ✓ Yes
-                      </Button>
-                      <Button
-                        size="lg"
-                        colorPalette="red"
-                        onClick={() => submitAnswer('No')}
-                        disabled={isLoading}
-                        px={8}
-                      >
-                        ✗ No
-                      </Button>
-                      <Button
-                        size="lg"
-                        colorPalette="gray"
-                        onClick={() => submitAnswer("Don't Know")}
-                        disabled={isLoading}
-                        px={8}
-                      >
-                        🤷 Don't Know
-                      </Button>
-                      <Button
-                        size="lg"
-                        colorPalette="yellow"
-                        onClick={() => submitAnswer('Maybe')}
-                        disabled={isLoading}
-                        px={8}
-                      >
-                        🔄 Maybe
-                      </Button>
-                    </HStack>
+                    <VStack gap={3} width="100%">
+                      <HStack gap={3} justify="center" flexWrap="wrap" width="100%">
+                        <Button
+                          size={{ base: "md", md: "lg" }}
+                          colorPalette="green"
+                          onClick={() => submitAnswer('Yes')}
+                          disabled={isLoading}
+                          px={{ base: 6, md: 8 }}
+                          flex={{ base: "1", md: "0" }}
+                          minW={{ base: "140px", md: "auto" }}
+                        >
+                          ✓ Yes
+                        </Button>
+                        <Button
+                          size={{ base: "md", md: "lg" }}
+                          colorPalette="red"
+                          onClick={() => submitAnswer('No')}
+                          disabled={isLoading}
+                          px={{ base: 6, md: 8 }}
+                          flex={{ base: "1", md: "0" }}
+                          minW={{ base: "140px", md: "auto" }}
+                        >
+                          ✗ No
+                        </Button>
+                      </HStack>
+                      <HStack gap={3} justify="center" flexWrap="wrap" width="100%">
+                        <Button
+                          size={{ base: "md", md: "lg" }}
+                          colorPalette="gray"
+                          onClick={() => submitAnswer("Don't Know")}
+                          disabled={isLoading}
+                          px={{ base: 6, md: 8 }}
+                          flex={{ base: "1", md: "0" }}
+                          minW={{ base: "140px", md: "auto" }}
+                        >
+                          🤷 Don't Know
+                        </Button>
+                        <Button
+                          size={{ base: "md", md: "lg" }}
+                          colorPalette="yellow"
+                          onClick={() => submitAnswer('Maybe')}
+                          disabled={isLoading}
+                          px={{ base: 6, md: 8 }}
+                          flex={{ base: "1", md: "0" }}
+                          minW={{ base: "140px", md: "auto" }}
+                        >
+                          🔄 Maybe
+                        </Button>
+                      </HStack>
+                    </VStack>
                   </VStack>
                 </Box>
               )}
